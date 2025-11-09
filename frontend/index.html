@@ -488,7 +488,9 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
-        const API_URL = 'https://foodtracker-pro.onrender.com/api';
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000/api'
+            : '/api';
         
         function App() {
             const [token, setToken] = useState(localStorage.getItem('token'));
