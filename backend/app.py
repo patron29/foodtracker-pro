@@ -410,8 +410,9 @@ def search_food():
         return get_demo_food_results(query)
 
 def get_demo_food_results(query):
-    """Fallback demo food database"""
+    """Fallback demo food database with restaurant items"""
     demo_foods = [
+        # Basic Foods
         {'name': 'Chicken Breast, Grilled', 'brand': 'Generic', 'calories': 165, 'protein': 31, 'carbs': 0, 'fats': 3.6, 'serving': '100g', 'verified': True},
         {'name': 'Chicken Breast, Raw', 'brand': 'USDA', 'calories': 120, 'protein': 22.5, 'carbs': 0, 'fats': 2.6, 'serving': '100g', 'verified': True},
         {'name': 'Banana, Medium', 'brand': 'Fresh', 'calories': 105, 'protein': 1.3, 'carbs': 27, 'fats': 0.4, 'serving': '1 medium', 'verified': True},
@@ -424,6 +425,90 @@ def get_demo_food_results(query):
         {'name': 'Avocado', 'brand': 'Fresh', 'calories': 160, 'protein': 2, 'carbs': 8.5, 'fats': 15, 'serving': '100g', 'verified': True},
         {'name': 'Sweet Potato, Baked', 'brand': 'Fresh', 'calories': 90, 'protein': 2, 'carbs': 21, 'fats': 0.2, 'serving': '100g', 'verified': True},
         {'name': 'Broccoli, Steamed', 'brand': 'Fresh', 'calories': 35, 'protein': 2.4, 'carbs': 7, 'fats': 0.4, 'serving': '100g', 'verified': True},
+        
+        # Chick-fil-A
+        {'name': 'Chick-fil-A Chicken Sandwich', 'brand': 'Chick-fil-A', 'calories': 440, 'protein': 28, 'carbs': 41, 'fats': 17, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'Chick-fil-A Spicy Chicken Sandwich', 'brand': 'Chick-fil-A', 'calories': 450, 'protein': 28, 'carbs': 43, 'fats': 19, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'Chick-fil-A Grilled Chicken Sandwich', 'brand': 'Chick-fil-A', 'calories': 320, 'protein': 28, 'carbs': 42, 'fats': 5, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'Chick-fil-A Nuggets 8-count', 'brand': 'Chick-fil-A', 'calories': 250, 'protein': 27, 'carbs': 11, 'fats': 11, 'serving': '8 pieces', 'verified': True},
+        {'name': 'Chick-fil-A Nuggets 12-count', 'brand': 'Chick-fil-A', 'calories': 380, 'protein': 40, 'carbs': 16, 'fats': 17, 'serving': '12 pieces', 'verified': True},
+        {'name': 'Chick-fil-A Waffle Fries Medium', 'brand': 'Chick-fil-A', 'calories': 360, 'protein': 5, 'carbs': 45, 'fats': 18, 'serving': '1 medium', 'verified': True},
+        {'name': 'Chick-fil-A Mac & Cheese', 'brand': 'Chick-fil-A', 'calories': 450, 'protein': 19, 'carbs': 45, 'fats': 21, 'serving': '1 medium', 'verified': True},
+        {'name': 'Chick-fil-A Fruit Cup', 'brand': 'Chick-fil-A', 'calories': 50, 'protein': 1, 'carbs': 13, 'fats': 0, 'serving': '1 medium', 'verified': True},
+        {'name': 'Chick-fil-A Chicken Cool Wrap', 'brand': 'Chick-fil-A', 'calories': 350, 'protein': 37, 'carbs': 30, 'fats': 14, 'serving': '1 wrap', 'verified': True},
+        
+        # McDonald\'s
+        {'name': 'McDonald\'s Big Mac', 'brand': 'McDonald\'s', 'calories': 550, 'protein': 25, 'carbs': 45, 'fats': 30, 'serving': '1 burger', 'verified': True},
+        {'name': 'McDonald\'s Quarter Pounder with Cheese', 'brand': 'McDonald\'s', 'calories': 520, 'protein': 30, 'carbs': 41, 'fats': 26, 'serving': '1 burger', 'verified': True},
+        {'name': 'McDonald\'s McChicken', 'brand': 'McDonald\'s', 'calories': 400, 'protein': 14, 'carbs': 39, 'fats': 21, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'McDonald\'s Chicken McNuggets 10-piece', 'brand': 'McDonald\'s', 'calories': 420, 'protein': 24, 'carbs': 25, 'fats': 24, 'serving': '10 pieces', 'verified': True},
+        {'name': 'McDonald\'s Medium Fries', 'brand': 'McDonald\'s', 'calories': 320, 'protein': 4, 'carbs': 43, 'fats': 15, 'serving': '1 medium', 'verified': True},
+        {'name': 'McDonald\'s Egg McMuffin', 'brand': 'McDonald\'s', 'calories': 310, 'protein': 17, 'carbs': 30, 'fats': 13, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'McDonald\'s Sausage McMuffin with Egg', 'brand': 'McDonald\'s', 'calories': 480, 'protein': 21, 'carbs': 30, 'fats': 30, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'McDonald\'s Hash Browns', 'brand': 'McDonald\'s', 'calories': 140, 'protein': 2, 'carbs': 15, 'fats': 9, 'serving': '1 hash brown', 'verified': True},
+        
+        # Starbucks
+        {'name': 'Starbucks Grande Latte', 'brand': 'Starbucks', 'calories': 190, 'protein': 13, 'carbs': 18, 'fats': 7, 'serving': '16 fl oz', 'verified': True},
+        {'name': 'Starbucks Grande Cappuccino', 'brand': 'Starbucks', 'calories': 120, 'protein': 8, 'carbs': 12, 'fats': 4, 'serving': '16 fl oz', 'verified': True},
+        {'name': 'Starbucks Bacon Egg & Cheese', 'brand': 'Starbucks', 'calories': 450, 'protein': 21, 'carbs': 44, 'fats': 21, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'Starbucks Egg White Bites', 'brand': 'Starbucks', 'calories': 170, 'protein': 13, 'carbs': 13, 'fats': 7, 'serving': '2 bites', 'verified': True},
+        {'name': 'Starbucks Blueberry Muffin', 'brand': 'Starbucks', 'calories': 350, 'protein': 5, 'carbs': 54, 'fats': 13, 'serving': '1 muffin', 'verified': True},
+        
+        # Chipotle
+        {'name': 'Chipotle Chicken Burrito Bowl', 'brand': 'Chipotle', 'calories': 630, 'protein': 42, 'carbs': 62, 'fats': 24, 'serving': '1 bowl', 'verified': True},
+        {'name': 'Chipotle Steak Burrito Bowl', 'brand': 'Chipotle', 'calories': 650, 'protein': 41, 'carbs': 62, 'fats': 27, 'serving': '1 bowl', 'verified': True},
+        {'name': 'Chipotle Chicken Burrito', 'brand': 'Chipotle', 'calories': 1025, 'protein': 58, 'carbs': 123, 'fats': 35, 'serving': '1 burrito', 'verified': True},
+        {'name': 'Chipotle Chips & Guacamole', 'brand': 'Chipotle', 'calories': 770, 'protein': 11, 'carbs': 84, 'fats': 45, 'serving': '1 serving', 'verified': True},
+        {'name': 'Chipotle Sofritas Bowl', 'brand': 'Chipotle', 'calories': 555, 'protein': 20, 'carbs': 68, 'fats': 25, 'serving': '1 bowl', 'verified': True},
+        
+        # Subway
+        {'name': 'Subway Turkey Breast 6-inch', 'brand': 'Subway', 'calories': 280, 'protein': 18, 'carbs': 46, 'fats': 3.5, 'serving': '6-inch', 'verified': True},
+        {'name': 'Subway Italian BMT 6-inch', 'brand': 'Subway', 'calories': 410, 'protein': 19, 'carbs': 46, 'fats': 16, 'serving': '6-inch', 'verified': True},
+        {'name': 'Subway Chicken Teriyaki 6-inch', 'brand': 'Subway', 'calories': 370, 'protein': 25, 'carbs': 57, 'fats': 5, 'serving': '6-inch', 'verified': True},
+        {'name': 'Subway Meatball Marinara 6-inch', 'brand': 'Subway', 'calories': 480, 'protein': 23, 'carbs': 52, 'fats': 18, 'serving': '6-inch', 'verified': True},
+        
+        # Panera Bread
+        {'name': 'Panera Broccoli Cheddar Soup Bowl', 'brand': 'Panera', 'calories': 360, 'protein': 13, 'carbs': 26, 'fats': 23, 'serving': '1 bowl', 'verified': True},
+        {'name': 'Panera Caesar Salad with Chicken', 'brand': 'Panera', 'calories': 520, 'protein': 37, 'carbs': 24, 'fats': 31, 'serving': '1 salad', 'verified': True},
+        {'name': 'Panera Turkey Sandwich', 'brand': 'Panera', 'calories': 500, 'protein': 29, 'carbs': 52, 'fats': 19, 'serving': '1 sandwich', 'verified': True},
+        
+        # Taco Bell
+        {'name': 'Taco Bell Crunchy Taco', 'brand': 'Taco Bell', 'calories': 170, 'protein': 8, 'carbs': 13, 'fats': 10, 'serving': '1 taco', 'verified': True},
+        {'name': 'Taco Bell Chicken Quesadilla', 'brand': 'Taco Bell', 'calories': 510, 'protein': 27, 'carbs': 37, 'fats': 28, 'serving': '1 quesadilla', 'verified': True},
+        {'name': 'Taco Bell Burrito Supreme', 'brand': 'Taco Bell', 'calories': 380, 'protein': 13, 'carbs': 51, 'fats': 13, 'serving': '1 burrito', 'verified': True},
+        {'name': 'Taco Bell Chalupa Supreme', 'brand': 'Taco Bell', 'calories': 350, 'protein': 13, 'carbs': 30, 'fats': 21, 'serving': '1 chalupa', 'verified': True},
+        
+        # Pizza
+        {'name': 'Domino\'s Hand Tossed Pepperoni Pizza', 'brand': 'Domino\'s', 'calories': 280, 'protein': 12, 'carbs': 30, 'fats': 12, 'serving': '1 slice', 'verified': True},
+        {'name': 'Pizza Hut Pepperoni Pan Pizza', 'brand': 'Pizza Hut', 'calories': 290, 'protein': 11, 'carbs': 29, 'fats': 14, 'serving': '1 slice', 'verified': True},
+        {'name': 'Papa John\'s Pepperoni Pizza', 'brand': 'Papa John\'s', 'calories': 300, 'protein': 13, 'carbs': 31, 'fats': 13, 'serving': '1 slice', 'verified': True},
+        
+        # Wendy\'s
+        {'name': 'Wendy\'s Dave\'s Single', 'brand': 'Wendy\'s', 'calories': 570, 'protein': 30, 'carbs': 39, 'fats': 34, 'serving': '1 burger', 'verified': True},
+        {'name': 'Wendy\'s Spicy Chicken Sandwich', 'brand': 'Wendy\'s', 'calories': 510, 'protein': 28, 'carbs': 50, 'fats': 22, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'Wendy\'s Chicken Nuggets 10-piece', 'brand': 'Wendy\'s', 'calories': 450, 'protein': 22, 'carbs': 29, 'fats': 28, 'serving': '10 pieces', 'verified': True},
+        {'name': 'Wendy\'s Baconator', 'brand': 'Wendy\'s', 'calories': 960, 'protein': 57, 'carbs': 38, 'fats': 66, 'serving': '1 burger', 'verified': True},
+        
+        # Shake Shack
+        {'name': 'Shake Shack ShackBurger', 'brand': 'Shake Shack', 'calories': 530, 'protein': 26, 'carbs': 41, 'fats': 30, 'serving': '1 burger', 'verified': True},
+        {'name': 'Shake Shack Chicken Shack', 'brand': 'Shake Shack', 'calories': 550, 'protein': 32, 'carbs': 44, 'fats': 27, 'serving': '1 sandwich', 'verified': True},
+        {'name': 'Shake Shack Fries', 'brand': 'Shake Shack', 'calories': 470, 'protein': 6, 'carbs': 60, 'fats': 23, 'serving': '1 order', 'verified': True},
+        
+        # In-N-Out
+        {'name': 'In-N-Out Double-Double', 'brand': 'In-N-Out', 'calories': 670, 'protein': 37, 'carbs': 39, 'fats': 41, 'serving': '1 burger', 'verified': True},
+        {'name': 'In-N-Out Cheeseburger', 'brand': 'In-N-Out', 'calories': 480, 'protein': 22, 'carbs': 39, 'fats': 27, 'serving': '1 burger', 'verified': True},
+        {'name': 'In-N-Out Fries', 'brand': 'In-N-Out', 'calories': 395, 'protein': 7, 'carbs': 54, 'fats': 18, 'serving': '1 order', 'verified': True},
+        
+        # Five Guys
+        {'name': 'Five Guys Hamburger', 'brand': 'Five Guys', 'calories': 700, 'protein': 39, 'carbs': 39, 'fats': 43, 'serving': '1 burger', 'verified': True},
+        {'name': 'Five Guys Little Hamburger', 'brand': 'Five Guys', 'calories': 480, 'protein': 26, 'carbs': 39, 'fats': 26, 'serving': '1 burger', 'verified': True},
+        {'name': 'Five Guys Fries Regular', 'brand': 'Five Guys', 'calories': 950, 'protein': 13, 'carbs': 131, 'fats': 41, 'serving': '1 order', 'verified': True},
+        
+        # Panda Express
+        {'name': 'Panda Express Orange Chicken', 'brand': 'Panda Express', 'calories': 490, 'protein': 25, 'carbs': 51, 'fats': 21, 'serving': '1 serving', 'verified': True},
+        {'name': 'Panda Express Beijing Beef', 'brand': 'Panda Express', 'calories': 470, 'protein': 13, 'carbs': 52, 'fats': 24, 'serving': '1 serving', 'verified': True},
+        {'name': 'Panda Express Fried Rice', 'brand': 'Panda Express', 'calories': 520, 'protein': 11, 'carbs': 85, 'fats': 16, 'serving': '1 serving', 'verified': True},
+        {'name': 'Panda Express Broccoli Beef', 'brand': 'Panda Express', 'calories': 150, 'protein': 9, 'carbs': 13, 'fats': 7, 'serving': '1 serving', 'verified': True},
     ]
     
     query_lower = query.lower()
