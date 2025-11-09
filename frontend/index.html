@@ -975,6 +975,10 @@
         }
         
         function FoodForm({ token, onClose }) {
+            const [mode, setMode] = useState('search'); // 'search' or 'manual'
+            const [searchQuery, setSearchQuery] = useState('');
+            const [searchResults, setSearchResults] = useState([]);
+            const [isSearching, setIsSearching] = useState(false);
             const [formData, setFormData] = useState({
                 meal_name: '',
                 calories: '',
@@ -983,6 +987,41 @@
                 fats: '',
                 notes: ''
             });
+            
+            // Search food database
+            const handleSearch = async (query) => {
+                setSearchQuery(query);
+                
+                if (query.length < 2) {
+                    setSearchResults([]);
+                    return;
+                }
+                
+                setIsSearching(true);
+                try {
+                    const response = await fetch(`${API_URL}/food/search?query=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    setSearchResults(data.results || []);
+                } catch (err) {
+                    console.error('Search error:', err);
+                    setSearchResults([]);
+                } finally {
+                    setIsSearching(false);
+                }
+            };
+            
+            // Select food from search results
+            const selectFood = (food) => {
+                setFormData({
+                    meal_name: food.name,
+                    calories: food.calories.toString(),
+                    protein: food.protein.toString(),
+                    carbs: food.carbs.toString(),
+                    fats: food.fats.toString(),
+                    notes: `${food.brand} - ${food.serving}`
+                });
+                setMode('manual'); // Switch to manual mode to show filled form
+            };
             
             const handleSubmit = async (e) => {
                 e.preventDefault();
@@ -1014,80 +1053,201 @@
                 <div className="modal-overlay" onClick={onClose}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h2>Log Food</h2>
-                        <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label>Meal Name</label>
-                                <input
-                                    type="text"
-                                    value={formData.meal_name}
-                                    onChange={(e) => setFormData({...formData, meal_name: e.target.value})}
-                                    required
-                                    placeholder="e.g., Chicken Salad"
-                                />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Calories</label>
-                                <input
-                                    type="number"
-                                    value={formData.calories}
-                                    onChange={(e) => setFormData({...formData, calories: e.target.value})}
-                                    required
-                                    placeholder="e.g., 350"
-                                />
-                            </div>
-                            
-                            <div className="form-row">
+                        
+                        {/* Mode Toggle */}
+                        <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
+                            <button
+                                type="button"
+                                className={`btn ${mode === 'search' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setMode('search')}
+                                style={{flex: 1}}
+                            >
+                                🔍 Search Database
+                            </button>
+                            <button
+                                type="button"
+                                className={`btn ${mode === 'manual' ? 'btn-primary' : 'btn-secondary'}`}
+                                onClick={() => setMode('manual')}
+                                style={{flex: 1}}
+                            >
+                                ✏️ Manual Entry
+                            </button>
+                        </div>
+                        
+                        {/* Search Mode */}
+                        {mode === 'search' && (
+                            <div>
                                 <div className="form-group">
-                                    <label>Protein (g)</label>
                                     <input
-                                        type="number"
-                                        value={formData.protein}
-                                        onChange={(e) => setFormData({...formData, protein: e.target.value})}
-                                        placeholder="e.g., 30"
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => handleSearch(e.target.value)}
+                                        placeholder="Search foods... e.g., 'chicken breast', 'banana'"
+                                        autoFocus
+                                    />
+                                </div>
+                                
+                                {isSearching && (
+                                    <div style={{textAlign: 'center', padding: '20px', color: '#999'}}>
+                                        Searching...
+                                    </div>
+                                )}
+                                
+                                {!isSearching && searchResults.length > 0 && (
+                                    <div style={{maxHeight: '400px', overflowY: 'auto'}}>
+                                        {searchResults.map((food, index) => (
+                                            <div
+                                                key={index}
+                                                onClick={() => selectFood(food)}
+                                                style={{
+                                                    padding: '15px',
+                                                    borderBottom: '1px solid #eee',
+                                                    cursor: 'pointer',
+                                                    transition: 'background 0.2s'
+                                                }}
+                                                onMouseEnter={(e) => e.target.style.background = '#f9f9f9'}
+                                                onMouseLeave={(e) => e.target.style.background = 'white'}
+                                            >
+                                                <div style={{fontWeight: '600', marginBottom: '5px'}}>
+                                                    {food.name}
+                                                    {food.verified && (
+                                                        <span style={{
+                                                            marginLeft: '8px',
+                                                            padding: '2px 8px',
+                                                            background: '#4CAF50',
+                                                            color: 'white',
+                                                            borderRadius: '10px',
+                                                            fontSize: '11px'
+                                                        }}>
+                                                            ✓ USDA
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div style={{fontSize: '13px', color: '#999', marginBottom: '8px'}}>
+                                                    {food.brand} • {food.serving}
+                                                </div>
+                                                <div style={{
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(2, 1fr)',
+                                                    gap: '5px',
+                                                    fontSize: '13px',
+                                                    color: '#666'
+                                                }}>
+                                                    <span>🔥 {food.calories} cal</span>
+                                                    <span>💪 {food.protein}g protein</span>
+                                                    <span>🌾 {food.carbs}g carbs</span>
+                                                    <span>🥑 {food.fats}g fats</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                
+                                {!isSearching && searchQuery.length >= 2 && searchResults.length === 0 && (
+                                    <div style={{textAlign: 'center', padding: '40px', color: '#999'}}>
+                                        <div style={{fontSize: '48px', marginBottom: '10px'}}>😕</div>
+                                        <div>No results found</div>
+                                        <div style={{fontSize: '13px', marginTop: '5px'}}>
+                                            Try "chicken", "banana", or "oatmeal"
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {searchQuery.length === 0 && (
+                                    <div style={{textAlign: 'center', padding: '40px', color: '#999'}}>
+                                        <div style={{fontSize: '48px', marginBottom: '10px'}}>🔍</div>
+                                        <div>Start typing to search 350,000+ foods</div>
+                                        <div style={{fontSize: '13px', marginTop: '10px', color: '#bbb'}}>
+                                            Try: chicken, banana, eggs, salmon, oatmeal
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                <div className="modal-buttons">
+                                    <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* Manual Entry Mode */}
+                        {mode === 'manual' && (
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label>Meal Name</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meal_name}
+                                        onChange={(e) => setFormData({...formData, meal_name: e.target.value})}
+                                        required
+                                        placeholder="e.g., Chicken Salad"
                                     />
                                 </div>
                                 
                                 <div className="form-group">
-                                    <label>Carbs (g)</label>
+                                    <label>Calories</label>
                                     <input
                                         type="number"
-                                        value={formData.carbs}
-                                        onChange={(e) => setFormData({...formData, carbs: e.target.value})}
-                                        placeholder="e.g., 40"
+                                        value={formData.calories}
+                                        onChange={(e) => setFormData({...formData, calories: e.target.value})}
+                                        required
+                                        placeholder="e.g., 350"
                                     />
                                 </div>
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Fats (g)</label>
-                                <input
-                                    type="number"
-                                    value={formData.fats}
-                                    onChange={(e) => setFormData({...formData, fats: e.target.value})}
-                                    placeholder="e.g., 15"
-                                />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Notes (optional)</label>
-                                <input
-                                    type="text"
-                                    value={formData.notes}
-                                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                                    placeholder="e.g., Homemade, lunch"
-                                />
-                            </div>
-                            
-                            <div className="modal-buttons">
-                                <button type="submit" className="btn btn-primary">
-                                    Log Food
-                                </button>
-                                <button type="button" className="btn btn-secondary" onClick={onClose}>
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
+                                
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Protein (g)</label>
+                                        <input
+                                            type="number"
+                                            value={formData.protein}
+                                            onChange={(e) => setFormData({...formData, protein: e.target.value})}
+                                            placeholder="e.g., 30"
+                                        />
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <label>Carbs (g)</label>
+                                        <input
+                                            type="number"
+                                            value={formData.carbs}
+                                            onChange={(e) => setFormData({...formData, carbs: e.target.value})}
+                                            placeholder="e.g., 40"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Fats (g)</label>
+                                    <input
+                                        type="number"
+                                        value={formData.fats}
+                                        onChange={(e) => setFormData({...formData, fats: e.target.value})}
+                                        placeholder="e.g., 15"
+                                    />
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Notes (optional)</label>
+                                    <input
+                                        type="text"
+                                        value={formData.notes}
+                                        onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                                        placeholder="e.g., Homemade, lunch"
+                                    />
+                                </div>
+                                
+                                <div className="modal-buttons">
+                                    <button type="submit" className="btn btn-primary">
+                                        Log Food
+                                    </button>
+                                    <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             );
