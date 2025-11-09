@@ -999,7 +999,9 @@
                 
                 setIsSearching(true);
                 try {
-                    const response = await fetch(`${API_URL}/food/search?query=${encodeURIComponent(query)}`);
+                    const response = await fetch(`${API_URL}/food/search?query=${encodeURIComponent(query)}`, {
+                        headers: { 'Authorization': token }
+                    });
                     const data = await response.json();
                     setSearchResults(data.results || []);
                 } catch (err) {
