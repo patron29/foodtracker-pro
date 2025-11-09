@@ -1,0 +1,40 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    - name: Run backend tests
+      run: |
+        cd backend
+        pytest tests/ --cov=. --cov-report=html
+    
+    - name: Check code quality
+      run: |
+        pip install flake8
+        flake8 backend/app.py --max-line-length=120
+    
+    - name: Deploy to Render (if tests pass)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "Tests passed! Render auto-deploys from main branch."

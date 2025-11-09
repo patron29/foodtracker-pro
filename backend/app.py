@@ -350,7 +350,7 @@ def search_food():
     if not user_id:
         return jsonify({'error': 'Invalid token'}), 401
     
-    query = request.args.get('q', '')
+    query = request.args.get('query', request.args.get('q', ''))  # Support both 'query' and 'q'
     
     if len(query) < 2:
         return jsonify({'results': []})
