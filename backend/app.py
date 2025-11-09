@@ -94,7 +94,7 @@ def register():
         c.execute('INSERT INTO tokens (token, user_id) VALUES (?, ?)', (token, user_id))
         conn.commit()
         
-        return jsonify({'token': token, 'username': username, 'user_id': user_id})
+        return jsonify({'token': token, 'username': username, 'user_id': user_id}), 201
     except sqlite3.IntegrityError:
         return jsonify({'error': 'Username already exists'}), 400
     finally:
@@ -148,7 +148,7 @@ def add_food():
     entry_id = c.lastrowid
     conn.close()
     
-    return jsonify({'id': entry_id, 'message': 'Food logged successfully'})
+    return jsonify({'id': entry_id, 'message': 'Food logged successfully'}), 201
 
 @app.route('/api/food', methods=['GET'])
 def get_food():
