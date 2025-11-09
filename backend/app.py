@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import sqlite3
 import hashlib
@@ -8,7 +8,7 @@ import os
 import requests
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend', static_url_path='')
 CORS(app)
 
 # USDA FoodData Central API (No API key required for basic access)
@@ -430,6 +430,18 @@ def get_demo_food_results(query):
     results = [f for f in demo_foods if query_lower in f['name'].lower()]
     
     return jsonify({'results': results})
+
+# Serve frontend
+@app.route('/')
+def serve_frontend():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    try:
+        return send_from_directory(app.static_folder, path)
+    except:
+        return send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == '__main__':
     init_db()
