@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4CAF50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FoodTracker">
+    <title>FoodTracker - Social Food Diary</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        
+        #root {
+            min-height: 100vh;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-box {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-box h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .main-app {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .sidebar .username {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .nav-tabs {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .nav-tabs li {
+            margin-bottom: 5px;
+        }
+        
+        .nav-tabs button {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: none;
+            text-align: left;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .nav-tabs button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .nav-tabs button:not(.active):hover {
+            background: #f5f5f5;
+        }
+        
+        .sidebar-btn {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            margin-left: 280px;
+            padding: 30px;
+            flex: 1;
+            max-width: calc(100vw - 280px);
+        }
+        
+        .content-header {
+            margin-bottom: 30px;
+        }
+        
+        .content-header h2 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .content-header p {
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .stat-card .unit {
+            font-size: 16px;
+            color: #999;
+            margin-left: 5px;
+        }
+        
+        .food-list {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .food-list h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .food-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .food-item:last-child {
+            border-bottom: none;
+        }
+        
+        .food-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .food-item .macros {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .food-item .time {
+            color: #999;
+            font-size: 13px;
+        }
+        
+        .food-item .notes {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        .modal .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .modal .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .friends-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .friend-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .friend-card:active {
+            transform: scale(0.98);
+        }
+        
+        .friend-card h3 {
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .friend-card .arrow {
+            color: #667eea;
+            font-size: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        
+        .search-results {
+            background: white;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .search-result-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-small {
+            padding: 8px 20px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .install-prompt {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .install-prompt h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .install-prompt p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .install-prompt button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding-bottom: 10px;
+            }
+            
+            .content {
+                margin-left: 0;
+                max-width: 100vw;
+                padding: 20px;
+            }
+            
+            .main-app {
+                flex-direction: column;
+            }
+            
+            .modal {
+                padding: 20px;
+            }
+            
+            .modal .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000/api'
+            : `http://${window.location.hostname}:5000/api`;
+        
+        function App() {
+            const [token, setToken] = useState(localStorage.getItem('token'));
+            const [username, setUsername] = useState(localStorage.getItem('username'));
+            const [deferredPrompt, setDeferredPrompt] = useState(null);
+            const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+            
+            useEffect(() => {
+                const handler = (e) => {
+                    e.preventDefault();
+                    setDeferredPrompt(e);
+                    setShowInstallPrompt(true);
+                };
+                
+                window.addEventListener('beforeinstallprompt', handler);
+                
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('service-worker.js');
+                }
+                
+                return () => window.removeEventListener('beforeinstallprompt', handler);
+            }, []);
+            
+            const handleInstall = async () => {
+                if (!deferredPrompt) return;
+                
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    setShowInstallPrompt(false);
+                }
+                setDeferredPrompt(null);
+            };
+            
+            const handleLogout = () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                setToken(null);
+                setUsername(null);
+            };
+            
+            if (!token) {
+                return <LoginScreen setToken={setToken} setUsername={setUsername} />;
+            }
+            
+            return (
+                <MainApp 
+                    token={token} 
+                    username={username} 
+                    onLogout={handleLogout}
+                    showInstallPrompt={showInstallPrompt}
+                    onInstall={handleInstall}
+                    onDismissInstall={() => setShowInstallPrompt(false)}
+                />
+            );
+        }
+        
+        function LoginScreen({ setToken, setUsername }) {
+            const [isLogin, setIsLogin] = useState(true);
+            const [formData, setFormData] = useState({ username: '', password: '' });
+            const [error, setError] = useState('');
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setError('');
+                
+                try {
+                    const response = await fetch(`${API_URL}/${isLogin ? 'login' : 'register'}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('username', data.username);
+                        setToken(data.token);
+                        setUsername(data.username);
+                    } else {
+                        setError(data.error);
+                    }
+                } catch (err) {
+                    setError('Connection error. Make sure backend is running.');
+                }
+            };
+            
+            return (
+                <div className="login-container">
+                    <div className="login-box">
+                        <h1>🍽️ FoodTracker</h1>
+                        {error && <div className="error">{error}</div>}
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Username</label>
+                                <input
+                                    type="text"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData({...formData, username: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Password</label>
+                                <input
+                                    type="password"
+                                    value={formData.password}
+                                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                                    required
+                                />
+                            </div>
+                            <button type="submit" className="btn btn-primary">
+                                {isLogin ? 'Log In' : 'Register'}
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => setIsLogin(!isLogin)}
+                            >
+                                {isLogin ? 'Create Account' : 'Back to Login'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+        
+        function MainApp({ token, username, onLogout, showInstallPrompt, onInstall, onDismissInstall }) {
+            const [activeTab, setActiveTab] = useState('diary');
+            const [showFoodForm, setShowFoodForm] = useState(false);
+            const [showFriendSearch, setShowFriendSearch] = useState(false);
+            const [selectedFriend, setSelectedFriend] = useState(null);
+            
+            return (
+                <div className="main-app">
+                    <div className="sidebar">
+                        <h2>FoodTracker</h2>
+                        <div className="username">@{username}</div>
+                        
+                        <ul className="nav-tabs">
+                            <li>
+                                <button
+                                    className={activeTab === 'diary' ? 'active' : ''}
+                                    onClick={() => setActiveTab('diary')}
+                                >
+                                    📖 My Diary
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    className={activeTab === 'social' ? 'active' : ''}
+                                    onClick={() => setActiveTab('social')}
+                                >
+                                    🌐 Social Feed
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    className={activeTab === 'friends' ? 'active' : ''}
+                                    onClick={() => setActiveTab('friends')}
+                                >
+                                    👥 Friends' Diaries
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <button 
+                            className="btn btn-primary sidebar-btn"
+                            onClick={() => setShowFoodForm(true)}
+                        >
+                            + Log Food
+                        </button>
+                        
+                        <button 
+                            className="btn btn-secondary sidebar-btn"
+                            onClick={() => setShowFriendSearch(true)}
+                        >
+                            + Add Friend
+                        </button>
+                        
+                        <button 
+                            className="btn btn-secondary sidebar-btn"
+                            onClick={onLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
+                    
+                    <div className="content">
+                        {showInstallPrompt && (
+                            <div className="install-prompt">
+                                <h3>📱 Install FoodTracker</h3>
+                                <p>Add to your home screen for quick access and offline use!</p>
+                                <button onClick={onInstall}>Install Now</button>
+                                <button 
+                                    onClick={onDismissInstall}
+                                    style={{marginLeft: '10px', background: 'transparent', color: 'white', border: '1px solid white'}}
+                                >
+                                    Maybe Later
+                                </button>
+                            </div>
+                        )}
+                        
+                        {activeTab === 'diary' && <DiaryTab token={token} />}
+                        {activeTab === 'social' && <SocialTab token={token} />}
+                        {activeTab === 'friends' && (
+                            <FriendsTab 
+                                token={token} 
+                                selectedFriend={selectedFriend}
+                                setSelectedFriend={setSelectedFriend}
+                            />
+                        )}
+                        
+                        {showFoodForm && (
+                            <FoodForm 
+                                token={token}
+                                onClose={() => setShowFoodForm(false)}
+                            />
+                        )}
+                        
+                        {showFriendSearch && (
+                            <FriendSearch
+                                token={token}
+                                onClose={() => setShowFriendSearch(false)}
+                            />
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        function DiaryTab({ token }) {
+            const [entries, setEntries] = useState([]);
+            const [stats, setStats] = useState({});
+            
+            useEffect(() => {
+                loadData();
+            }, []);
+            
+            const loadData = async () => {
+                try {
+                    const [entriesRes, statsRes] = await Promise.all([
+                        fetch(`${API_URL}/food`, {
+                            headers: { 'Authorization': token }
+                        }),
+                        fetch(`${API_URL}/food/stats`, {
+                            headers: { 'Authorization': token }
+                        })
+                    ]);
+                    
+                    const entriesData = await entriesRes.json();
+                    const statsData = await statsRes.json();
+                    
+                    setEntries(entriesData);
+                    setStats(statsData);
+                } catch (err) {
+                    console.error('Error loading diary:', err);
+                }
+            };
+            
+            return (
+                <div>
+                    <div className="content-header">
+                        <h2>My Food Diary</h2>
+                        <p>Track your daily nutrition</p>
+                    </div>
+                    
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <h3>Calories</h3>
+                            <div className="value">{stats.total_calories || 0}<span className="unit">kcal</span></div>
+                        </div>
+                        <div className="stat-card">
+                            <h3>Protein</h3>
+                            <div className="value">{stats.total_protein || 0}<span className="unit">g</span></div>
+                        </div>
+                        <div className="stat-card">
+                            <h3>Carbs</h3>
+                            <div className="value">{stats.total_carbs || 0}<span className="unit">g</span></div>
+                        </div>
+                        <div className="stat-card">
+                            <h3>Fats</h3>
+                            <div className="value">{stats.total_fats || 0}<span className="unit">g</span></div>
+                        </div>
+                    </div>
+                    
+                    <div className="food-list">
+                        <h3>Today's Meals</h3>
+                        {entries.length === 0 ? (
+                            <div className="empty-state">
+                                <h3>No meals logged today</h3>
+                                <p>Click "+ Log Food" to add your first meal</p>
+                            </div>
+                        ) : (
+                            entries.map(entry => (
+                                <div key={entry.id} className="food-item">
+                                    <h4>{entry.meal_name}</h4>
+                                    <div className="macros">
+                                        <span>🔥 {entry.calories} cal</span>
+                                        <span>💪 {entry.protein}g protein</span>
+                                        <span>🌾 {entry.carbs}g carbs</span>
+                                        <span>🥑 {entry.fats}g fats</span>
+                                    </div>
+                                    <div className="time">
+                                        {new Date(entry.logged_at).toLocaleString()}
+                                    </div>
+                                    {entry.notes && <div className="notes">{entry.notes}</div>}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        function SocialTab({ token }) {
+            const [feed, setFeed] = useState([]);
+            
+            useEffect(() => {
+                loadFeed();
+            }, []);
+            
+            const loadFeed = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/feed`, {
+                        headers: { 'Authorization': token }
+                    });
+                    const data = await response.json();
+                    setFeed(data);
+                } catch (err) {
+                    console.error('Error loading feed:', err);
+                }
+            };
+            
+            return (
+                <div>
+                    <div className="content-header">
+                        <h2>Social Feed</h2>
+                        <p>See what your friends are eating</p>
+                    </div>
+                    
+                    <div className="food-list">
+                        {feed.length === 0 ? (
+                            <div className="empty-state">
+                                <h3>Your feed is empty</h3>
+                                <p>Add friends to see their meals here</p>
+                            </div>
+                        ) : (
+                            feed.map(entry => (
+                                <div key={entry.id} className="food-item">
+                                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '10px'}}>
+                                        <h4>{entry.meal_name}</h4>
+                                        <span style={{color: '#667eea', fontWeight: 600}}>@{entry.username}</span>
+                                    </div>
+                                    <div className="macros">
+                                        <span>🔥 {entry.calories} cal</span>
+                                        <span>💪 {entry.protein}g protein</span>
+                                        <span>🌾 {entry.carbs}g carbs</span>
+                                        <span>🥑 {entry.fats}g fats</span>
+                                    </div>
+                                    <div className="time">
+                                        {new Date(entry.logged_at).toLocaleString()}
+                                    </div>
+                                    {entry.notes && <div className="notes">{entry.notes}</div>}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        function FriendsTab({ token, selectedFriend, setSelectedFriend }) {
+            const [friends, setFriends] = useState([]);
+            const [friendEntries, setFriendEntries] = useState([]);
+            
+            useEffect(() => {
+                loadFriends();
+            }, []);
+            
+            useEffect(() => {
+                if (selectedFriend) {
+                    loadFriendDiary();
+                }
+            }, [selectedFriend]);
+            
+            const loadFriends = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/friends`, {
+                        headers: { 'Authorization': token }
+                    });
+                    const data = await response.json();
+                    setFriends(data);
+                } catch (err) {
+                    console.error('Error loading friends:', err);
+                }
+            };
+            
+            const loadFriendDiary = async () => {
+                try {
+                    const response = await fetch(`${API_URL}/friends/${selectedFriend.id}/food`, {
+                        headers: { 'Authorization': token }
+                    });
+                    const data = await response.json();
+                    setFriendEntries(data);
+                } catch (err) {
+                    console.error('Error loading friend diary:', err);
+                }
+            };
+            
+            if (selectedFriend) {
+                return (
+                    <div>
+                        <button 
+                            onClick={() => setSelectedFriend(null)}
+                            style={{marginBottom: '20px', padding: '10px 20px', border: 'none', background: '#f5f5f5', borderRadius: '8px', cursor: 'pointer'}}
+                        >
+                            ← Back to Friends
+                        </button>
+                        
+                        <div className="content-header">
+                            <h2>@{selectedFriend.username}'s Diary</h2>
+                        </div>
+                        
+                        <div className="food-list">
+                            {friendEntries.length === 0 ? (
+                                <div className="empty-state">
+                                    <h3>No meals logged yet</h3>
+                                </div>
+                            ) : (
+                                friendEntries.map(entry => (
+                                    <div key={entry.id} className="food-item">
+                                        <h4>{entry.meal_name}</h4>
+                                        <div className="macros">
+                                            <span>🔥 {entry.calories} cal</span>
+                                            <span>💪 {entry.protein}g protein</span>
+                                            <span>🌾 {entry.carbs}g carbs</span>
+                                            <span>🥑 {entry.fats}g fats</span>
+                                        </div>
+                                        <div className="time">
+                                            {new Date(entry.logged_at).toLocaleString()}
+                                        </div>
+                                        {entry.notes && <div className="notes">{entry.notes}</div>}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div>
+                    <div className="content-header">
+                        <h2>Friends' Diaries</h2>
+                        <p>View what your friends are eating</p>
+                    </div>
+                    
+                    <div className="friends-list">
+                        {friends.length === 0 ? (
+                            <div className="empty-state">
+                                <h3>No friends yet</h3>
+                                <p>Click "+ Add Friend" to connect with others</p>
+                            </div>
+                        ) : (
+                            friends.map(friend => (
+                                <div 
+                                    key={friend.id} 
+                                    className="friend-card"
+                                    onClick={() => setSelectedFriend(friend)}
+                                >
+                                    <h3>@{friend.username}</h3>
+                                    <span className="arrow">→</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        function FoodForm({ token, onClose }) {
+            const [formData, setFormData] = useState({
+                meal_name: '',
+                calories: '',
+                protein: '',
+                carbs: '',
+                fats: '',
+                notes: ''
+            });
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                
+                try {
+                    await fetch(`${API_URL}/food`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': token
+                        },
+                        body: JSON.stringify({
+                            ...formData,
+                            calories: parseInt(formData.calories),
+                            protein: parseInt(formData.protein) || 0,
+                            carbs: parseInt(formData.carbs) || 0,
+                            fats: parseInt(formData.fats) || 0
+                        })
+                    });
+                    
+                    onClose();
+                    window.location.reload();
+                } catch (err) {
+                    console.error('Error logging food:', err);
+                }
+            };
+            
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>Log Food</h2>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label>Meal Name</label>
+                                <input
+                                    type="text"
+                                    value={formData.meal_name}
+                                    onChange={(e) => setFormData({...formData, meal_name: e.target.value})}
+                                    required
+                                    placeholder="e.g., Chicken Salad"
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Calories</label>
+                                <input
+                                    type="number"
+                                    value={formData.calories}
+                                    onChange={(e) => setFormData({...formData, calories: e.target.value})}
+                                    required
+                                    placeholder="e.g., 350"
+                                />
+                            </div>
+                            
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Protein (g)</label>
+                                    <input
+                                        type="number"
+                                        value={formData.protein}
+                                        onChange={(e) => setFormData({...formData, protein: e.target.value})}
+                                        placeholder="e.g., 30"
+                                    />
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label>Carbs (g)</label>
+                                    <input
+                                        type="number"
+                                        value={formData.carbs}
+                                        onChange={(e) => setFormData({...formData, carbs: e.target.value})}
+                                        placeholder="e.g., 40"
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Fats (g)</label>
+                                <input
+                                    type="number"
+                                    value={formData.fats}
+                                    onChange={(e) => setFormData({...formData, fats: e.target.value})}
+                                    placeholder="e.g., 15"
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label>Notes (optional)</label>
+                                <input
+                                    type="text"
+                                    value={formData.notes}
+                                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                                    placeholder="e.g., Homemade, lunch"
+                                />
+                            </div>
+                            
+                            <div className="modal-buttons">
+                                <button type="submit" className="btn btn-primary">
+                                    Log Food
+                                </button>
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+        
+        function FriendSearch({ token, onClose }) {
+            const [query, setQuery] = useState('');
+            const [results, setResults] = useState([]);
+            
+            const handleSearch = async () => {
+                if (!query.trim()) return;
+                
+                try {
+                    const response = await fetch(`${API_URL}/users/search?q=${query}`, {
+                        headers: { 'Authorization': token }
+                    });
+                    const data = await response.json();
+                    setResults(data);
+                } catch (err) {
+                    console.error('Error searching users:', err);
+                }
+            };
+            
+            const handleAdd = async (friendId) => {
+                try {
+                    await fetch(`${API_URL}/friends`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': token
+                        },
+                        body: JSON.stringify({ friend_id: friendId })
+                    });
+                    
+                    onClose();
+                    window.location.reload();
+                } catch (err) {
+                    console.error('Error adding friend:', err);
+                }
+            };
+            
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>Add Friend</h2>
+                        
+                        <div className="search-box">
+                            <input
+                                type="text"
+                                placeholder="Search by username..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                        </div>
+                        
+                        <button 
+                            className="btn btn-primary"
+                            onClick={handleSearch}
+                            style={{width: '100%', marginBottom: '20px'}}
+                        >
+                            Search
+                        </button>
+                        
+                        {results.length > 0 && (
+                            <div className="search-results">
+                                {results.map(user => (
+                                    <div key={user.id} className="search-result-item">
+                                        <span>@{user.username}</span>
+                                        <button
+                                            className="btn btn-primary btn-small"
+                                            onClick={() => handleAdd(user.id)}
+                                        >
+                                            Add
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        
+                        <button 
+                            className="btn btn-secondary"
+                            onClick={onClose}
+                            style={{width: '100%', marginTop: '20px'}}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
